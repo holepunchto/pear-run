@@ -16,7 +16,6 @@ const isMobile = isReactNative || isExpo || isIOS || isAndroid
 
 if (isBareKit || isMobile) {
   module.exports = require('./lib/bare-kit.js')
-}
-else if (isPear || isBare) {
+} else if (isPear || isBare) {
   module.exports = eval('require')('./lib/pear.js') // eslint-disable-line no-eval
 }
