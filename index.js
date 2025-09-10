@@ -1,4 +1,4 @@
-const { isBareKit, isPear, isIOS, isAndroid } = require('which-runtime')
+const { isBareKit, isPear, isIOS, isAndroid, isBare } = require('which-runtime')
 
 // port to which-runtime
 const isReactNative = typeof global !== 'undefined' &&
@@ -14,8 +14,9 @@ const isExpo = typeof global !== 'undefined' &&
 
 const isMobile = isReactNative || isExpo || isIOS || isAndroid
 
-if (isPear) {
-  module.exports = eval('require')('./lib/pear.js') // eslint-disable-line no-eval
-} else if (isBareKit || isMobile) {
+if (isBareKit || isMobile) {
   module.exports = require('./lib/bare-kit.js')
+}
+else if (isPear || isBare) {
+  module.exports = eval('require')('./lib/pear.js') // eslint-disable-line no-eval
 }
