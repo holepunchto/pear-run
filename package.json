@@ -2,10 +2,20 @@
   "name": "pear-run",
   "version": "1.0.0",
   "main": "index.js",
+  "exports": {
+    ".": {
+      "node": "./index.js",
+      "pear": "./index.js",
+      "react-native": "./index.mobile.js"
+    }
+  },
   "type": "commonjs",
   "description": "Run Pear app from app p2p with pear:// link",
   "license": "Apache-2.0",
-  "files": [],
+  "files": [
+    "index.js",
+    "index.mobile.js"
+  ],
   "scripts": {
     "test:gen": "brittle -r test/all.js test/*.test.js",
     "test": "brittle-bare --coverage test/all.js",
@@ -31,6 +41,8 @@
     "paparam": "^1.8.5",
     "pear-cmd": "^1.0.0",
     "pear-link": "^4.1.0",
-    "pear-ref": "^1.0.0"
+    "pear-ref": "^1.0.0",
+    "react-native-bare-kit": "^0.9.0",
+    "which-runtime": "^1.3.2"
   }
 }
