@@ -1,6 +1,5 @@
 'use strict'
 /* globals Pear */
-const { isBare } = require('which-runtime')
 const ref = require('pear-ref')
 const plink = require('pear-link')
 const pear = require('pear-cmd')
@@ -8,7 +7,7 @@ const b4a = require('b4a')
 const hypercoreid = require('hypercore-id-encoding')
 const rundef = require('pear-cmd/run')
 const { command } = require('paparam')
-const { spawn } = isBare ? require('bare-subprocess') : require('child_process')
+const { spawn } = require('child_process')
 const program = global.Bare ?? global.process
 
 module.exports = function run (link, args = []) {
