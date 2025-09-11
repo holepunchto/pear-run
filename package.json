@@ -15,8 +15,10 @@
     "lint": "standard"
   },
   "imports": {
-    "child_process": {
-      "bare": "bare-subprocess"
+    "#main": {
+      "react-native": "./index.mobile.js",
+      "node": "./index.js",
+      "pear": "./index.js"
     }
   },
   "devDependencies": {
