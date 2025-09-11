@@ -2,12 +2,19 @@
   "name": "pear-run",
   "version": "1.0.0",
   "main": "index.js",
+  "exports": {
+    ".": {
+      "node": "./index.js",
+      "pear": "./index.js",
+      "react-native": "./index.mobile.js"
+    }
+  },
   "type": "commonjs",
   "description": "Run Pear app from app p2p with pear:// link",
   "license": "Apache-2.0",
   "files": [
     "index.js",
-    "lib/"
+    "index.mobile.js"
   ],
   "scripts": {
     "test:gen": "brittle -r test/all.js test/*.test.js",
@@ -15,10 +22,8 @@
     "lint": "standard"
   },
   "imports": {
-    "#main": {
-      "react-native": "./index.mobile.js",
-      "node": "./index.js",
-      "pear": "./index.js"
+    "child_process": {
+      "bare": "bare-subprocess"
     }
   },
   "devDependencies": {
