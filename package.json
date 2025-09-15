@@ -6,6 +6,7 @@
     ".": {
       "node": "./index.js",
       "pear": "./index.js",
+      "bare": "./index.js",
       "react-native": "./index.mobile.js"
     }
   },
