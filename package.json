@@ -4,9 +4,7 @@
   "main": "index.js",
   "exports": {
     ".": {
-      "node": "./index.js",
-      "pear": "./index.js",
-      "bare": "./index.js",
+      "default": "./index.js",
       "react-native": "./index.mobile.js"
     }
   },
