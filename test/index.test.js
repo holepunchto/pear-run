@@ -1,5 +1,6 @@
 'use strict'
 /* globals Bare */
+global.Pear = {}
 const test = require('brittle')
 const path = require('bare-path')
 const os = require('bare-os')
@@ -24,13 +25,13 @@ test('returns a pipe that talks to the sub app', (t) => {
   const link = fixtures.echo
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', link)
+  const pipe = run(link)
   t.teardown(() => {
     delete global.Pear
     global.Bare.argv.length = 1
     global.Bare.argv.push(...ARGV)
     pipe.end()
   })
-  const pipe = run(link)
   pipe.on('data', (data) => {
     t.is(data.toString(), 'hello')
   })
@@ -50,13 +51,13 @@ test('injects --trusted flag into argv', (t) => {
   const link = fixtures.argv
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', link)
+  const pipe = run(link)
   t.teardown(() => {
     delete global.Pear
     global.Bare.argv.length = 1
     global.Bare.argv.push(...ARGV)
     pipe.end()
   })
-  const pipe = run(link)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
     t.is(childArgv[2], '--trusted')
@@ -75,13 +76,13 @@ test('avoids --trusted flag duplication', (t) => {
   const link = fixtures.argv
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', '--trusted', link)
+  const pipe = run(link)
   t.teardown(() => {
     delete global.Pear
     global.Bare.argv.length = 1
     global.Bare.argv.push(...ARGV)
     pipe.end()
   })
-  const pipe = run(link)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
     t.is(childArgv.filter((arg) => arg === '--trusted').length, 1)
@@ -128,14 +129,14 @@ test('passes args input at the tail', (t) => {
   const link = fixtures.argv
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', link)
+  const args = ['--foo', 'bar']
+  const pipe = run(link, args)
   t.teardown(() => {
     delete global.Pear
     global.Bare.argv.length = 1
     global.Bare.argv.push(...ARGV)
     pipe.end()
   })
-  const args = ['--foo', 'bar']
-  const pipe = run(link, args)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
     const tail = childArgv.slice(-args.length)
@@ -156,14 +157,14 @@ test('passes Pear.constructor.RUNTIME_ARGV at the head', (t) => {
   const link = fixtures.argv
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', link)
+  const args = ['--foo', 'bar']
+  const pipe = run(link, args)
   t.teardown(() => {
     delete global.Pear
     global.Bare.argv.length = 1
     global.Bare.argv.push(...ARGV)
     pipe.end()
   })
-  const args = ['--foo', 'bar']
-  const pipe = run(link, args)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
     t.alike(childArgv.slice(2), ['some', 'args', 'run', '--trusted', fixtures.argv, '--foo', 'bar'])
@@ -182,12 +183,12 @@ test('pipe emits crash event on non-zero child exit', (t) => {
   const link = fixtures.nonZeroExit
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', link)
+  const pipe = run(link)
   t.teardown(() => {
     delete global.Pear
     global.Bare.argv.length = 1
     global.Bare.argv.push(...ARGV)
   })
-  const pipe = run(link)
   pipe.once('crash', (info) => {
     t.is(info.exitCode, 1)
   })
