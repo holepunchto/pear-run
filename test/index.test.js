@@ -3,6 +3,7 @@
 const test = require('brittle')
 const path = require('bare-path')
 const os = require('bare-os')
+global.Pear = {}
 const run = require('..')
 os.chdir(__dirname)
 const fixtures = {
