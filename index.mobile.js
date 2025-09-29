@@ -1,7 +1,7 @@
 module.exports = async function run (link, source, args = []) {
   const { Worklet } = require('react-native-bare-kit')
 
-  //////// For when using link (need to download, create bundle ect)
+  // TODO: For when using link (need to download, create bundle ect)
 
   // const isPear = link.startsWith('pear://')
   // const isFile = link.startsWith('file://')
