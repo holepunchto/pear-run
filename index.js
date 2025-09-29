@@ -8,9 +8,11 @@ const hypercoreid = require('hypercore-id-encoding')
 const rundef = require('pear-cmd/run')
 const { command } = require('paparam')
 const { spawn } = require('child_process')
+const { isElectronRenderer } = require('which-runtime')
 const program = global.Bare ?? global.process
 
 module.exports = function run (link, args = []) {
+  if (isElectronRenderer) return Pear[Pear.constructor.IPC].run(link, args)
   const { RUNTIME, RUNTIME_ARGV, RTI } = Pear.constructor
   let parsed = null
   try {
