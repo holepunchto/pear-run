@@ -1,7 +1,7 @@
-const { isBareKit } = require('which-runtime')
+const { isPear } = require('which-runtime')
 
 try{
-if (isBareKit) module.exports = require('./lib/mobile.js')
+if (!isPear) module.exports = require('./lib/mobile.js')
 else module.exports = require('./lib/desktop.js')
 } catch (err){
   console.error(err)
