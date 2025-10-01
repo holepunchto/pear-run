@@ -89,7 +89,7 @@ test('avoids --trusted flag duplication', (t) => {
   })
 })
 
-test('injects --parent when RTI.startId is set', t => {
+test('injects --parent when RTI.startId is set', (t) => {
   t.plan(1)
 
   class API {
@@ -167,7 +167,15 @@ test('passes Pear.constructor.RUNTIME_ARGV at the head', (t) => {
   const pipe = run(link, args)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
-    t.alike(childArgv.slice(2), ['some', 'args', 'run', '--trusted', fixtures.argv, '--foo', 'bar'])
+    t.alike(childArgv.slice(2), [
+      'some',
+      'args',
+      'run',
+      '--trusted',
+      fixtures.argv,
+      '--foo',
+      'bar'
+    ])
   })
 })
 
@@ -195,7 +203,7 @@ test('pipe emits crash event on non-zero child exit', (t) => {
   pipe.end()
 })
 
-test('locks to parent fork.length version if running link with same key (w/out fork.length) as in parent applink', t => {
+test('locks to parent fork.length version if running link with same key (w/out fork.length) as in parent applink', (t) => {
   t.plan(2)
 
   class API {
@@ -228,7 +236,7 @@ test('locks to parent fork.length version if running link with same key (w/out f
   })
 })
 
-test('preserves link fork.length version if supplied even when running link with same key as in parent applink', t => {
+test('preserves link fork.length version if supplied even when running link with same key as in parent applink', (t) => {
   t.plan(2)
 
   class API {
@@ -261,7 +269,7 @@ test('preserves link fork.length version if supplied even when running link with
   })
 })
 
-test('normalizes pear://dev link to relative path', t => {
+test('normalizes pear://dev link to relative path', (t) => {
   t.plan(1)
 
   class API {
@@ -291,7 +299,7 @@ test('normalizes pear://dev link to relative path', t => {
   pipe.write('hello')
 })
 
-test('splices out --links <value>', t => {
+test('splices out --links <value>', (t) => {
   t.plan(2)
 
   class API {
