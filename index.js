@@ -32,6 +32,7 @@ module.exports = function run (link, args = []) {
   const inject = [link]
   if (!cmd.flags.trusted) inject.unshift('--trusted')
   if (RTI.startId) inject.unshift('--parent', RTI.startId)
+  if (Pear.app.dir) inject.unshift('--base', Pear.app.dir)
   argv.length = cmd.indices.args.link
   argv.push(...inject)
   argv.unshift('run')

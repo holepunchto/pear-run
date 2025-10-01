@@ -64,6 +64,33 @@ test('injects --trusted flag into argv', (t) => {
   })
 })
 
+test('injects --base flag into argv', (t) => {
+  t.plan(2)
+
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = { dir: __dirname }
+  }
+  global.Pear = new API()
+  const link = fixtures.argv
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', link)
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+  const pipe = run(link)
+  pipe.once('data', (data) => {
+    const childArgv = JSON.parse(data)
+    t.is(childArgv[2], '--base')
+    t.is(childArgv[3], __dirname)
+  })
+})
+
 test('avoids --trusted flag duplication', (t) => {
   t.plan(1)
   class API {
