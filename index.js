@@ -8,11 +8,19 @@ const hypercoreid = require('hypercore-id-encoding')
 const rundef = require('pear-cmd/run')
 const { command } = require('paparam')
 const { spawn } = require('child_process')
+const { pathToFileURL } = require('url-file-url')
+const path = require('bare-path')
 const { isElectronRenderer } = require('which-runtime')
+const unixpathresolve = require('unix-path-resolve')
 const program = global.Bare ?? global.process
 
 module.exports = function run(link, args = []) {
   if (isElectronRenderer) return Pear[Pear.constructor.IPC].run(link, args)
+
+  const isPear = link.startsWith('pear://')
+  const isFile = link.startsWith('file://')
+  const isPath = isPear === false && isFile === false
+
   const { RUNTIME, RUNTIME_ARGV, RTI } = Pear.constructor
   let parsed = null
   try {
@@ -34,6 +42,25 @@ module.exports = function run(link, args = []) {
   ) {
     link = `pear://${Pear.app.fork}.${Pear.app.length}.${hypercoreid.encode(key)}${parsed.pathname || ''}`
   }
+
+  if (isPath) {
+    if (Pear.app.key !== null) {
+      if (path.isAbsolute(link)) {
+        link = Pear.app.link + link
+      } else {
+        unixpathresolve('/', link) // check that the link doesnt escape project root
+        link = `pear://${unixpathresolve('/' + Pear.app.link.substring('pear://'.length), link).slice(1)}`
+      }
+    } else {
+      if (path.isAbsolute(link)) {
+        link = pathToFileURL(link).href
+      } else {
+        unixpathresolve('/', link) // check that the link doesnt escape project root
+        link = pathToFileURL(path.resolve(Pear.app.dir, link)).href
+      }
+    }
+  }
+
   const argv = pear(program.argv.slice(1)).rest
   const parser = command('run', ...rundef)
   const cmd = parser.parse(argv, { sync: true })
