@@ -11,7 +11,7 @@ const { spawn } = require('child_process')
 const { isElectronRenderer } = require('which-runtime')
 const program = global.Bare ?? global.process
 
-module.exports = function run (link, args = []) {
+module.exports = function run(link, args = []) {
   if (isElectronRenderer) return Pear[Pear.constructor.IPC].run(link, args)
   const { RUNTIME, RUNTIME_ARGV, RTI } = Pear.constructor
   let parsed = null
@@ -22,8 +22,16 @@ module.exports = function run (link, args = []) {
     throw err
   }
   const { key, fork, length } = parsed.drive
-  const { key: appKey } = Pear.app.applink ? (plink.parse(Pear.app.applink)).drive : {}
-  if (appKey && key && b4a.equals(key, appKey) && fork === null && length === null) {
+  const { key: appKey } = Pear.app.applink
+    ? plink.parse(Pear.app.applink).drive
+    : {}
+  if (
+    appKey &&
+    key &&
+    b4a.equals(key, appKey) &&
+    fork === null &&
+    length === null
+  ) {
     link = `pear://${Pear.app.fork}.${Pear.app.length}.${hypercoreid.encode(key)}${parsed.pathname || ''}`
   }
   const argv = pear(program.argv.slice(1)).rest
@@ -37,8 +45,10 @@ module.exports = function run (link, args = []) {
   argv.push(...inject)
   argv.unshift('run')
   let linksIndex = cmd.indices.flags.links
-  const linksElements = linksIndex > 0 ? (cmd.flags.links === argv[linksIndex]) ? 2 : 1 : 0
-  if (cmd.indices.flags.startId > 0) { // todo: dead code?
+  const linksElements =
+    linksIndex > 0 ? (cmd.flags.links === argv[linksIndex] ? 2 : 1) : 0
+  if (cmd.indices.flags.startId > 0) {
+    // todo: dead code?
     argv.splice(cmd.indices.flags.startId, 1)
     if (linksIndex > cmd.indices.flags.startId) linksIndex -= linksElements
   }
