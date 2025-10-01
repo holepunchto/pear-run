@@ -64,7 +64,7 @@ test('injects --trusted flag into argv', (t) => {
   })
 })
 
-test('injects --base flag into argv', (t) => {
+test('when from disk, injects --base flag into argv', (t) => {
   t.plan(2)
 
   class API {
