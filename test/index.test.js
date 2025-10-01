@@ -71,7 +71,7 @@ test('injects --base flag into argv', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { dir: __dirname }
+    app = { dir: __dirname, key: null }
   }
   global.Pear = new API()
   const link = fixtures.argv
