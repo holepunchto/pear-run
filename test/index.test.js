@@ -224,8 +224,7 @@ test('relative path is relative to link with app-key', (t) => {
     static RUNTIME_ARGV = []
     app = {
       key: Buffer.alloc(32),
-      applink: 'pear://key',
-      applink: pathToFileURL(__dirname).href
+      applink: 'pear://keet'
     }
   }
   global.Pear = new API()
@@ -244,7 +243,7 @@ test('relative path is relative to link with app-key', (t) => {
     const path = childArgv[3]
     t.is(
       path,
-      `pear://key/foo/bar`,
+      'pear://keet/foo/bar',
       'relative path is resolved from link with app-key'
     )
   })
@@ -259,8 +258,7 @@ test('when running from key absolute path is appended to link', (t) => {
     static RUNTIME_ARGV = []
     app = {
       key: Buffer.alloc(32),
-      applink: 'pear://key/foo',
-      applink: pathToFileURL(__dirname).href
+      applink: 'pear://keet'
     }
   }
   global.Pear = new API()
@@ -277,7 +275,7 @@ test('when running from key absolute path is appended to link', (t) => {
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
     const path = childArgv[3]
-    t.is(path, `pear://key/foo/bar/baz`, 'absolute path is appended to link')
+    t.is(path, `pear://keet/bar/baz`, 'absolute path is appended to link')
   })
 })
 
