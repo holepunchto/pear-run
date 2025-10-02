@@ -46,7 +46,7 @@ module.exports = function run(link, args = []) {
 
   if (isPath) {
     unixpathresolve('/', link) // throw if escaping root
-    if (isAbsolute) link = pathToFileURL(link)
+    if (isAbsolute) link = pathToFileURL(link).href.replaceAll('%23', '#')
     else
       link = plink.serialize({
         ...applink,
