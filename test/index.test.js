@@ -275,7 +275,7 @@ test('when running from key absolute path is file url', (t) => {
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
     const path = childArgv[3]
-    t.is(path, `file:///bar/baz`, 'absolute path is file url')
+    t.is(path, pathToFileURL('/bar/baz').href, 'absolute path is file url')
   })
 })
 
