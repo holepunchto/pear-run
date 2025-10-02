@@ -21,7 +21,7 @@ test('returns a pipe that talks to the sub app', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { key: null }
+    app = { key: null, applink: pathToFileURL(__dirname).href }
   }
   global.Pear = new API()
   const link = fixtures.echo
@@ -47,7 +47,7 @@ test('injects --trusted flag into argv', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { key: null }
+    app = { key: null, applink: pathToFileURL(__dirname).href }
   }
   global.Pear = new API()
   const link = fixtures.argv
@@ -73,7 +73,7 @@ test('when from disk, injects --base flag into argv', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { dir: __dirname, key: null }
+    app = { applink: pathToFileURL(__dirname).href, key: null, dir: __dirname }
   }
   global.Pear = new API()
   const link = !isWindows ? './fixtures/argv.js' : '.\\fixtures\\argv.js'
@@ -100,7 +100,7 @@ test('relative path cant escape app key', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { key: Buffer.alloc(32), link: 'pear://key' }
+    app = { key: Buffer.alloc(32), applink: 'pear://keet', dir: __dirname }
   }
   global.Pear = new API()
   const link = '../foo'
@@ -113,14 +113,14 @@ test('relative path cant escape app key', (t) => {
   }
 })
 
-test('relative path cant escape app dir', (t) => {
+test('relative path cant escape project root', (t) => {
   t.plan(3)
 
   class API {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { key: null, dir: __dirname }
+    app = { key: null, applink: pathToFileURL(__dirname).href, dir: __dirname }
   }
   try {
     global.Pear = new API()
@@ -160,7 +160,7 @@ test('absolute path is converted to file url ', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { dir: __dirname, key: null }
+    app = { applink: pathToFileURL(__dirname).href, key: null }
   }
   global.Pear = new API()
   const link = path.join(__dirname, 'foo', 'bar')
@@ -178,7 +178,7 @@ test('absolute path is converted to file url ', (t) => {
     const path = childArgv[3]
     t.is(
       path,
-      pathToFileURL(__dirname) + '/foo/bar',
+      pathToFileURL(__dirname).href + '/foo/bar',
       'absolute path is coverted to file url'
     )
   })
@@ -191,7 +191,7 @@ test('relative path is relative to project root', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { dir: __dirname, key: null }
+    app = { applink: pathToFileURL(__dirname).href, key: null }
   }
   global.Pear = new API()
   const link = './foo/bar'
@@ -209,7 +209,7 @@ test('relative path is relative to project root', (t) => {
     const path = childArgv[5]
     t.is(
       path,
-      pathToFileURL(__dirname) + '/foo/bar',
+      pathToFileURL(__dirname).href + '/foo/bar',
       'relative path is resolved from project root'
     )
   })
@@ -224,8 +224,8 @@ test('relative path is relative to link with app-key', (t) => {
     static RUNTIME_ARGV = []
     app = {
       key: Buffer.alloc(32),
-      link: 'pear://key',
-      dir: __dirname
+      applink: 'pear://key',
+      applink: pathToFileURL(__dirname).href
     }
   }
   global.Pear = new API()
@@ -259,8 +259,8 @@ test('when running from key absolute path is appended to link', (t) => {
     static RUNTIME_ARGV = []
     app = {
       key: Buffer.alloc(32),
-      link: 'pear://key/foo',
-      dir: __dirname
+      applink: 'pear://key/foo',
+      applink: pathToFileURL(__dirname).href
     }
   }
   global.Pear = new API()
@@ -287,7 +287,7 @@ test('avoids --trusted flag duplication', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { key: null }
+    app = { key: null, applink: pathToFileURL(__dirname).href }
   }
   global.Pear = new API()
   const link = fixtures.argv
@@ -313,7 +313,7 @@ test('injects --parent when RTI.startId is set', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = { startId: 'de4215533cd3343ed3331111245abf' }
     static RUNTIME_ARGV = []
-    app = { key: null }
+    app = { key: null, applink: pathToFileURL(__dirname).href }
   }
   global.Pear = new API()
   const link = fixtures.argv
@@ -340,7 +340,7 @@ test('passes args input at the tail', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { key: null }
+    app = { key: null, applink: pathToFileURL(__dirname).href }
   }
   global.Pear = new API()
   const link = fixtures.argv
@@ -368,7 +368,7 @@ test('passes Pear.constructor.RUNTIME_ARGV at the head', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = ['alt-run', 'some', 'args']
-    app = { key: null, dir: __dirname }
+    app = { key: null, applink: pathToFileURL(__dirname).href }
   }
   global.Pear = new API()
   const link = fixtures.argv
@@ -402,7 +402,7 @@ test('pipe emits crash event on non-zero child exit', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { key: null }
+    app = { key: null, applink: pathToFileURL(__dirname).href }
   }
   global.Pear = new API()
   const link = fixtures.nonZeroExit
@@ -493,7 +493,7 @@ test('normalizes pear://dev link to relative path', (t) => {
     static RUNTIME = Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { key: null, dir: __dirname }
+    app = { key: null, applink: pathToFileURL(__dirname).href }
   }
   global.Pear = new API()
 
@@ -523,7 +523,7 @@ test('splices out --links <value>', (t) => {
     static RUNTIME = Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { key: null, dir: __dirname }
+    app = { key: null, applink: pathToFileURL(__dirname).href }
   }
   global.Pear = new API()
 

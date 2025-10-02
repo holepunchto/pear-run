@@ -31,9 +31,9 @@ module.exports = function run(link, args = []) {
     throw err
   }
   const { key, fork, length } = parsed.drive
-  const { key: appKey } = Pear.app.applink
-    ? plink.parse(Pear.app.applink).drive
-    : {}
+
+  const applink = plink.parse(Pear.app.applink)
+  const { key: appKey } = applink.drive
   if (
     appKey &&
     key &&
@@ -45,21 +45,13 @@ module.exports = function run(link, args = []) {
   }
 
   if (isPath) {
-    if (Pear.app.key !== null) {
-      if (isAbsolute) {
-        link = Pear.app.link + link
-      } else {
-        unixpathresolve('/', link) // check that the link doesnt escape project root
-        link = `pear://${unixpathresolve('/' + Pear.app.link.substring('pear://'.length), link).slice(1)}`
-      }
-    } else {
-      if (isAbsolute) {
-        link = pathToFileURL(link).href
-      } else {
-        unixpathresolve('/', link) // check that the link doesnt escape project root
-        link = pathToFileURL(path.resolve(Pear.app.dir, link)).href
-      }
-    }
+    unixpathresolve('/', link) // throw if escaping root
+    if (isAbsolute) link = pathToFileURL(link)
+    else
+      link = plink.serialize({
+        ...applink,
+        pathname: unixpathresolve(applink.pathname || '/', link)
+      })
   }
 
   const argv = pear(program.argv.slice(1)).rest
