@@ -4,6 +4,7 @@ const test = require('brittle')
 const path = require('bare-path')
 const os = require('bare-os')
 const { pathToFileURL } = require('url-file-url')
+const { isWindows } = require('which-runtime')
 global.Pear = {}
 const run = require('..')
 os.chdir(__dirname)
@@ -61,7 +62,7 @@ test('injects --trusted flag into argv', (t) => {
   const pipe = run(link)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
-    t.is(childArgv[4], '--trusted')
+    t.is(childArgv[2], '--trusted')
   })
 })
 
@@ -75,7 +76,7 @@ test('when from disk, injects --base flag into argv', (t) => {
     app = { dir: __dirname, key: null }
   }
   global.Pear = new API()
-  const link = fixtures.argv
+  const link = !isWindows ? './fixtures/argv.js' : '.\\fixtures\\argv.js'
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', link)
   t.teardown(() => {
@@ -174,7 +175,7 @@ test('absolute path is converted to file url ', (t) => {
   const pipe = run(link)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
-    const path = childArgv[5]
+    const path = childArgv[3]
     t.is(
       path,
       pathToFileURL(__dirname) + '/foo/bar',
@@ -387,8 +388,6 @@ test('passes Pear.constructor.RUNTIME_ARGV at the head', (t) => {
       'some',
       'args',
       'run',
-      '--base',
-      __dirname,
       '--trusted',
       pathToFileURL(link).href,
       '--foo',

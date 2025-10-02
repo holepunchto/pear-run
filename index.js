@@ -20,6 +20,7 @@ module.exports = function run(link, args = []) {
   const isPear = link.startsWith('pear://')
   const isFile = link.startsWith('file://')
   const isPath = isPear === false && isFile === false
+  const isAbsolute = isPath && path.isAbsolute(link)
 
   const { RUNTIME, RUNTIME_ARGV, RTI } = Pear.constructor
   let parsed = null
@@ -45,14 +46,14 @@ module.exports = function run(link, args = []) {
 
   if (isPath) {
     if (Pear.app.key !== null) {
-      if (path.isAbsolute(link)) {
+      if (isAbsolute) {
         link = Pear.app.link + link
       } else {
         unixpathresolve('/', link) // check that the link doesnt escape project root
         link = `pear://${unixpathresolve('/' + Pear.app.link.substring('pear://'.length), link).slice(1)}`
       }
     } else {
-      if (path.isAbsolute(link)) {
+      if (isAbsolute) {
         link = pathToFileURL(link).href
       } else {
         unixpathresolve('/', link) // check that the link doesnt escape project root
@@ -67,7 +68,9 @@ module.exports = function run(link, args = []) {
   const inject = [link]
   if (!cmd.flags.trusted) inject.unshift('--trusted')
   if (RTI.startId) inject.unshift('--parent', RTI.startId)
-  if (Pear.app.key === null) inject.unshift('--base', Pear.app.dir)
+  if (Pear.app.key === null && isPath && !isAbsolute) {
+    inject.unshift('--base', Pear.app.dir)
+  }
   argv.length = cmd.indices.args.link
   argv.push(...inject)
   argv.unshift('run')
