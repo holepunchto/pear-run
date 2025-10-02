@@ -46,8 +46,7 @@ module.exports = function run(link, args = []) {
 
   if (isPath) {
     unixpathresolve('/', link) // throw if escaping root
-    if (isAbsolute)
-      link = Pear.app.key === null ? pathToFileURL(link) : applink.origin + link
+    if (isAbsolute) link = pathToFileURL(link)
     else
       link = plink.serialize({
         ...applink,

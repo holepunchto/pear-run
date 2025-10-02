@@ -93,7 +93,7 @@ test('when from disk, injects --base flag into argv', (t) => {
   })
 })
 
-test('relative path cant escape app key', (t) => {
+test('relative path cannot escape app key', (t) => {
   t.plan(1)
 
   class API {
@@ -113,7 +113,7 @@ test('relative path cant escape app key', (t) => {
   }
 })
 
-test('relative path cant escape project root', (t) => {
+test('relative path cannot escape project root', (t) => {
   t.plan(3)
 
   class API {
@@ -249,7 +249,7 @@ test('relative path is relative to link with app-key', (t) => {
   })
 })
 
-test('when running from key absolute path is appended to link', (t) => {
+test('when running from key absolute path is file url', (t) => {
   t.plan(1)
 
   class API {
@@ -275,7 +275,7 @@ test('when running from key absolute path is appended to link', (t) => {
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
     const path = childArgv[3]
-    t.is(path, `pear://keet/bar/baz`, 'absolute path is appended to link')
+    t.is(path, `file:///bar/baz`, 'absolute path is file url')
   })
 })
 
