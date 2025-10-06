@@ -15,12 +15,12 @@ const unixpathresolve = require('unix-path-resolve')
 const program = global.Bare ?? global.process
 
 module.exports = function run(link, args = []) {
-  if (isElectronRenderer) return Pear[Pear.constructor.IPC].run(link, args)
-
   const isPear = link.startsWith('pear://')
   const isFile = link.startsWith('file://')
   const isPath = isPear === false && isFile === false
   const isAbsolute = isPath && path.isAbsolute(link)
+
+  const app = Pear.app ?? Pear.config // note: legacy, remove in future
 
   const { RUNTIME, RUNTIME_ARGV, RTI } = Pear.constructor
   let parsed = null
@@ -32,7 +32,7 @@ module.exports = function run(link, args = []) {
   }
   const { key, fork, length } = parsed.drive
 
-  const applink = plink.parse(Pear.app.applink)
+  const applink = plink.parse(app.applink)
   const { key: appKey } = applink.drive
   if (
     appKey &&
@@ -41,7 +41,15 @@ module.exports = function run(link, args = []) {
     fork === null &&
     length === null
   ) {
-    link = `pear://${Pear.app.fork}.${Pear.app.length}.${hypercoreid.encode(key)}${parsed.pathname || ''}`
+    link = `pear://${app.fork}.${app.length}.${hypercoreid.encode(key)}${parsed.pathname || ''}`
+  }
+
+  if (isElectronRenderer) {
+    if (Pear[Pear.constructor.IPC])  {
+      return Pear[Pear.constructor.IPC].run(link, args)
+    } else {
+      return Pear.worker.run(link, args)
+    }
   }
 
   if (isPath) {
@@ -60,8 +68,8 @@ module.exports = function run(link, args = []) {
   const inject = [link]
   if (!cmd.flags.trusted) inject.unshift('--trusted')
   if (RTI.startId) inject.unshift('--parent', RTI.startId)
-  if (Pear.app.key === null && isPath && !isAbsolute) {
-    inject.unshift('--base', Pear.app.dir)
+  if (app.key === null && isPath && !isAbsolute) {
+    inject.unshift('--base', app.dir)
   }
   argv.length = cmd.indices.args.link
   argv.push(...inject)
