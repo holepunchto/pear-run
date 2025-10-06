@@ -15,6 +15,9 @@
   "imports": {
     "child_process": {
       "bare": "bare-subprocess"
+    },
+    "path": {
+      "bare": "bare-path"
     }
   },
   "devDependencies": {
