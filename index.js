@@ -41,11 +41,14 @@ module.exports = function run(link, args = []) {
     fork === null &&
     length === null
   ) {
-    link = `pear://${app.fork}.${app.length}.${hypercoreid.encode(key)}${parsed.pathname || ''}`
+    link = plink.serialize({
+      ...parsed,
+      drive: { ...parsed.drive, length: app.length, fork: app.fork }
+    })
   }
 
   if (isElectronRenderer) {
-    if (Pear[Pear.constructor.IPC])  {
+    if (typeof Pear[Pear.constructor.IPC]?.run === 'function') {
       return Pear[Pear.constructor.IPC].run(link, args)
     } else {
       return Pear.worker.run(link, args)
