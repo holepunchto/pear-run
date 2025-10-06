@@ -1,6 +1,6 @@
 {
   "name": "pear-run",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "type": "commonjs",
   "description": "Run Pear app from app p2p with pear:// link",
