@@ -545,3 +545,97 @@ test('splices out --links <value>', (t) => {
     t.not(argv.includes('pear://test,./some/other'))
   })
 })
+
+test('injects fork and length when running aliased applink key', (t) => {
+  t.plan(1)
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = { applink: 'pear://keet', length: 333, fork: 666 }
+  }
+  global.Pear = new API()
+  const link = 'pear://oeeoz3w6fjjt7bym3ndpa6hhicm8f8naxyk11z4iypeoupn6jzpo'
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', link)
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+  const pipe = run(link)
+  pipe.once('data', (data) => {
+    const childArgv = JSON.parse(data)
+    const link = childArgv[childArgv.length - 1]
+    t.is(
+      link,
+      'pear://666.333.oeeoz3w6fjjt7bym3ndpa6hhicm8f8naxyk11z4iypeoupn6jzpo'
+    )
+  })
+})
+
+test('injects fork and length when running applink key', (t) => {
+  t.plan(1)
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = {
+      applink: 'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co',
+      length: 22,
+      fork: 44
+    }
+  }
+  global.Pear = new API()
+  const link =
+        'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co/worker/index.js'
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', link)
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+  const pipe = run(link)
+  pipe.once('data', (data) => {
+    const childArgv = JSON.parse(data)
+    const link = childArgv[childArgv.length - 1]
+    t.is(
+      link,
+      'pear://44.22.t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co/worker/index.js'
+    )
+  })
+})
+
+
+test('does not inject fork and length when running different key', (t) => {
+  t.plan(1)
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = { applink: 'pear://keet', length: 333, fork: 666 }
+  }
+  global.Pear = new API()
+  const link =
+        'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co/worker/index.js'
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', link)
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+  const pipe = run(link)
+  pipe.once('data', (data) => {
+    const childArgv = JSON.parse(data)
+    const link = childArgv[childArgv.length - 1]
+    t.is(
+      link,
+      'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co/worker/index.js'
+    )
+  })
+})
