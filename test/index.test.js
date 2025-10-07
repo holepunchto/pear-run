@@ -589,7 +589,7 @@ test('injects fork and length when running applink key', (t) => {
   }
   global.Pear = new API()
   const link =
-        'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co/worker/index.js'
+    'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co/worker/index.js'
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', link)
   t.teardown(() => {
@@ -609,7 +609,6 @@ test('injects fork and length when running applink key', (t) => {
   })
 })
 
-
 test('does not inject fork and length when running different key', (t) => {
   t.plan(1)
   class API {
@@ -620,7 +619,7 @@ test('does not inject fork and length when running different key', (t) => {
   }
   global.Pear = new API()
   const link =
-        'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co/worker/index.js'
+    'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co/worker/index.js'
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', link)
   t.teardown(() => {
