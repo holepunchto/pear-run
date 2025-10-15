@@ -8,7 +8,7 @@ const hypercoreid = require('hypercore-id-encoding')
 const rundef = require('pear-cmd/run')
 const { command } = require('paparam')
 const { spawn } = require('child_process')
-const { pathToFileURL, fileURLToPath } = require('url-file-url')
+const { pathToFileURL } = require('url-file-url')
 const path = require('path')
 const { isElectronRenderer } = require('which-runtime')
 const unixpathresolve = require('unix-path-resolve')
@@ -71,7 +71,11 @@ module.exports = function run(link, args = []) {
   const inject = [link]
   if (!cmd.flags.trusted) inject.unshift('--trusted')
   if (RTI.startId) inject.unshift('--parent', RTI.startId)
-  if (app.key === null && isPath && (!isAbsolute || withinProject(link))) {
+  if (
+    app.key === null &&
+    isPath &&
+    (!isAbsolute || link.startsWith(app.applink + '/'))
+  ) {
     inject.unshift('--base', app.dir)
   }
   argv.length = cmd.indices.args.link
@@ -98,9 +102,4 @@ module.exports = function run(link, args = []) {
   const pipe = sp.stdio[3]
   pipe.on('end', () => pipe.end())
   return pipe
-}
-
-function withinProject(link) {
-  const app = Pear.app || Pear.config // TODO use Pear.app after dropping support for Pear.config
-  return link.startsWith(app.applink + '/')
 }
