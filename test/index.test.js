@@ -638,3 +638,65 @@ test('does not inject fork and length when running different key', (t) => {
     )
   })
 })
+
+test('adds base flag when an absolute path resolves inside Pear.app.dir', (t) => {
+  t.plan(2)
+
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = { applink: pathToFileURL(__dirname).href, key: null, dir: __dirname }
+  }
+  global.Pear = new API()
+  const link = path.join(__dirname, 'foo', 'bar')
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', link)
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+  const pipe = run(link)
+  pipe.once('data', (data) => {
+    const childArgv = JSON.parse(data)
+    const baseIndex = childArgv.indexOf('--base')
+    t.ok(
+      baseIndex > -1,
+      'injects base dir for absolute path in same directory as Pear.app.dir'
+    )
+    t.is(childArgv[baseIndex + 1], __dirname)
+  })
+})
+
+test(' does not add base flag when an absolute path resolves outside Pear.app.dir', (t) => {
+  t.plan(1)
+
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = { applink: pathToFileURL(__dirname).href, key: null, dir: '/dir' }
+  }
+  global.Pear = new API()
+  const link = path.join(__dirname, 'foo', 'bar')
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', link)
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+  const pipe = run(link)
+  pipe.once('data', (data) => {
+    const childArgv = JSON.parse(data)
+    const baseIndex = childArgv.indexOf('--base')
+    t.is(
+      baseIndex,
+      -1,
+      'does not inject base dir for absolute path outside Pear.app.dir'
+    )
+  })
+})
