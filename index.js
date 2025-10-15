@@ -71,7 +71,11 @@ module.exports = function run(link, args = []) {
   const inject = [link]
   if (!cmd.flags.trusted) inject.unshift('--trusted')
   if (RTI.startId) inject.unshift('--parent', RTI.startId)
-  if (app.key === null && isPath && !isAbsolute) {
+  if (
+    app.key === null &&
+    isPath &&
+    (!isAbsolute || link.startsWith(app.applink + '/'))
+  ) {
     inject.unshift('--base', app.dir)
   }
   argv.length = cmd.indices.args.link
