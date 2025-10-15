@@ -47,7 +47,7 @@ test('injects --trusted flag into argv', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { key: null, applink: pathToFileURL(__dirname).href }
+    app = { key: null, applink: pathToFileURL(os.tmpdir()).href }
   }
   global.Pear = new API()
   const link = fixtures.argv
@@ -160,7 +160,7 @@ test('absolute path is converted to file url ', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { applink: pathToFileURL(__dirname).href, key: null }
+    app = { applink: pathToFileURL(os.tmpdir()).href, key: null }
   }
   global.Pear = new API()
   const link = path.join(__dirname, 'foo', 'bar')
@@ -366,7 +366,7 @@ test('passes Pear.constructor.RUNTIME_ARGV at the head', (t) => {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = ['alt-run', 'some', 'args']
-    app = { key: null, applink: pathToFileURL(__dirname).href }
+    app = { key: null, applink: pathToFileURL(os.tmpdir()).href }
   }
   global.Pear = new API()
   const link = fixtures.argv
@@ -670,17 +670,17 @@ test('adds base flag when an absolute path resolves inside Pear.app.dir', (t) =>
   })
 })
 
-test(' does not add base flag when an absolute path resolves outside Pear.app.dir', (t) => {
+test('does not add base flag when an absolute path resolves outside Pear.app.dir', (t) => {
   t.plan(1)
 
   class API {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = { applink: pathToFileURL(__dirname).href, key: null, dir: '/dir' }
+    app = { applink: pathToFileURL(__dirname).href, key: null }
   }
   global.Pear = new API()
-  const link = path.join(__dirname, 'foo', 'bar')
+  const link = path.join(os.tmpdir(), 'foo', 'bar')
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', link)
   t.teardown(() => {

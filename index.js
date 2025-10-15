@@ -71,11 +71,7 @@ module.exports = function run(link, args = []) {
   const inject = [link]
   if (!cmd.flags.trusted) inject.unshift('--trusted')
   if (RTI.startId) inject.unshift('--parent', RTI.startId)
-  if (
-    app.key === null &&
-    isPath &&
-    (!isAbsolute || sharesBaseDirectory(link, app.dir))
-  ) {
+  if (app.key === null && isPath && (!isAbsolute || withinProject(link))) {
     inject.unshift('--base', app.dir)
   }
   argv.length = cmd.indices.args.link
@@ -104,10 +100,7 @@ module.exports = function run(link, args = []) {
   return pipe
 }
 
-function sharesBaseDirectory(link, base) {
-  if (link.startsWith('file://')) {
-    return fileURLToPath(link).startsWith(base + path.sep)
-  } else {
-    return link.startsWith(base + path.sep)
-  }
+function withinProject(link) {
+  const app = Pear.app || Pear.config // TODO use Pear.app after dropping support for Pear.config
+  return link.startsWith(app.applink + '/')
 }
