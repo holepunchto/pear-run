@@ -175,7 +175,7 @@ test('absolute path is converted to file url ', (t) => {
   const pipe = run(link)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
-    const path = childArgv[3]
+    const path = childArgv[4]
     t.is(
       path,
       pathToFileURL(__dirname).href + '/foo/bar',
@@ -206,7 +206,7 @@ test('relative path is relative to project root', (t) => {
   const pipe = run(link)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
-    const path = childArgv[5]
+    const path = childArgv[6]
     t.is(
       path,
       pathToFileURL(__dirname).href + '/foo/bar',
@@ -240,7 +240,7 @@ test('relative path is relative to link with app-key', (t) => {
   const pipe = run(link)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
-    const path = childArgv[3]
+    const path = childArgv[4]
     t.is(
       path,
       'pear://keet/foo/bar',
@@ -274,7 +274,7 @@ test('when running from key absolute path is file url', (t) => {
   const pipe = run(link)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
-    const path = childArgv[3]
+    const path = childArgv[4]
     t.is(path, pathToFileURL('/bar/baz').href, 'absolute path is file url')
   })
 })
@@ -387,6 +387,7 @@ test('passes Pear.constructor.RUNTIME_ARGV at the head', (t) => {
       'args',
       'run',
       '--trusted',
+      '--no-pre',
       pathToFileURL(link).href,
       '--foo',
       'bar'
@@ -445,7 +446,7 @@ test('locks to parent fork.length version if running link with same key (w/out f
 
   pipe.once('data', (data) => {
     const argv = JSON.parse(data)
-    const out = argv[3]
+    const out = argv[4]
     t.ok(out.startsWith('pear://4.9.'), 'fork.length prefix present')
     t.ok(out.endsWith('/some/path'), 'pathname preserved')
   })
@@ -478,7 +479,7 @@ test('preserves link fork.length version if supplied even when running link with
 
   pipe.once('data', (data) => {
     const argv = JSON.parse(data)
-    const out = argv[3]
+    const out = argv[4]
     t.ok(out.startsWith('pear://0.6.'), 'fork.length prefix present')
     t.ok(out.endsWith('/some/path'), 'pathname preserved')
   })
@@ -698,5 +699,32 @@ test('does not add base flag when an absolute path resolves outside Pear.app.dir
       -1,
       'does not inject base dir for absolute path outside Pear.app.dir'
     )
+  })
+})
+
+test('spawns with --no-pre flag', (t) => {
+  t.plan(1)
+
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = { applink: pathToFileURL(__dirname).href, key: null }
+  }
+  global.Pear = new API()
+  const link = path.join(os.tmpdir(), 'foo', 'bar')
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', link)
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+  const pipe = run(link)
+  pipe.once('data', (data) => {
+    const childArgv = JSON.parse(data)
+    const hasPre = childArgv.includes('--no-pre')
+    t.is(hasPre, true)
   })
 })
