@@ -68,7 +68,7 @@ module.exports = function run(link, args = []) {
   const argv = pear(program.argv.slice(1)).rest
   const parser = command('run', ...rundef)
   const cmd = parser.parse(argv, { sync: true })
-  const inject = [link]
+  const inject = ['--no-pre', link]
   if (!cmd.flags.trusted) inject.unshift('--trusted')
   if (RTI.startId) inject.unshift('--parent', RTI.startId)
   if (
