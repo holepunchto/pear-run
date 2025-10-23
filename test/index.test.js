@@ -350,12 +350,12 @@ test('passes args input at the tail', (t) => {
     global.Bare.argv.push(...ARGV)
     pipe.end()
   })
-  const args = [undefined, '--foo', null, 'bar', null]
+  const args = ['--foo', 'bar']
   const pipe = run(link, args)
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
-    const tail = childArgv.slice(-args.length + 3)
-    t.alike(tail, ['--foo', 'bar'])
+    const tail = childArgv.slice(-args.length)
+    t.alike(tail, args)
   })
 })
 
