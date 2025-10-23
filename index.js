@@ -20,8 +20,6 @@ module.exports = function run(link, args = []) {
   const isPath = isPear === false && isFile === false
   const isAbsolute = isPath && path.isAbsolute(link)
 
-  args = args.filter((arg) => arg !== null && arg !== undefined)
-
   const app = Pear.app ?? Pear.config // note: legacy, remove in future
 
   const { RUNTIME, RUNTIME_ARGV, RTI } = Pear.constructor
