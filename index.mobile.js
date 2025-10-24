@@ -1,25 +1,8 @@
-module.exports = async function run (link, source, args = []) {
-  const { Worklet } = require('react-native-bare-kit')
+const { isMobile, isReactNative } = require('which-runtime')
 
-  // TODO: For when using link (need to download, create bundle ect)
-
-  // const isPear = link.startsWith('pear://')
-  // const isFile = link.startsWith('file://')
-  // const onDisk = key === null
-
-  // const runner = new Runner(link)
-
-  // if (onDisk === false && isPear === false) throw ERR_INVALID_INPUT('Key must start with pear://')
-
-  // const parentWorklet = new Worklet()
-  // const appName = 'autopass-example'
-  // if (isPear) {
-  //   parentWorklet.start('./mobile-runner.js', [link, args[0], appName])
-  // }
-  // else if (isFile) runner.startFile()
-
-  const worklet = new Worklet()
-  await worklet.start(link, source, args)
-
-  return worklet
+try{
+if (isMobile && !isReactNative) module.exports = require('./lib/mobile.js')
+else module.exports = require('./lib/react-native.js')
+} catch (err){
+  console.error(err)
 }

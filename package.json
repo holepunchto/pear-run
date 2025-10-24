@@ -5,8 +5,10 @@
   "exports": {
     ".": {
       "default": "./index.js",
-      "react-native": "./index.mobile.js"
-    }
+      "react-native": "./index.mobile.js",
+      "expo": "./index.mobile.js"
+    },
+    "./package": "./package.json"
   },
   "type": "commonjs",
   "description": "Run Pear app from app p2p with pear:// link",
