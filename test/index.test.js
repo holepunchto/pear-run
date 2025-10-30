@@ -1,5 +1,6 @@
 'use strict'
 /* globals Bare */
+global.Pear = {}
 const test = require('brittle')
 const path = require('bare-path')
 const os = require('bare-os')
