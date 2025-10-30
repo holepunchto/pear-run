@@ -1,4 +1,5 @@
-const { isMobile, isReactNative } = require('which-runtime')
+const { isIOS, isAndroid, isExpo, isReactNative } = require('which-runtime')
+const isMobile = isIOS || isAndroid || isExpo || isReactNative
 
 try{
 if (isMobile && !isReactNative) module.exports = require('./lib/mobile.js')

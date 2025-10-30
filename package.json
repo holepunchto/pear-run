@@ -1,7 +1,6 @@
 {
   "name": "pear-run",
   "version": "1.0.0",
-  "main": "index.js",
   "exports": {
     ".": {
       "default": "./index.js",
