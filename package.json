@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "exports": {
     ".": {
-      "default": "./index.js",
       "react-native": "./index.mobile.js",
-      "expo": "./index.mobile.js"
+      "default": "./index.js"
     },
     "./package": "./package.json"
   },
@@ -39,6 +38,7 @@
     "b4a": "^1.6.7",
     "bare-path": "^3.0.0",
     "bare-subprocess": "^5.1.0",
+    "bare-thread": "^1.1.3",
     "bare-url": "^2.2.2",
     "corestore": "^7.4.7",
     "hypercore-crypto": "^3.6.1",
@@ -49,7 +49,6 @@
     "pear-cmd": "^1.0.0",
     "pear-link": "^4.1.0",
     "pear-ref": "^1.0.0",
-    "pear-run": "file:pear-run-1.0.0.tgz",
     "react-native-bare-kit": "^0.9.0",
     "streamx": "^2.22.1",
     "which-runtime": "file:../which-runtime/which-runtime-1.3.2.tgz"
