@@ -33,7 +33,6 @@
     "b4a": "^1.6.7",
     "bare-path": "^3.0.0",
     "bare-subprocess": "^5.1.0",
-    "hypercore-id-encoding": "^1.3.0",
     "paparam": "^1.8.5",
     "pear-cmd": "^1.0.0",
     "pear-link": "^4.1.0",
