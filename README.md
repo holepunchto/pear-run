@@ -8,7 +8,7 @@
 import run from 'pear-run'
 ```
 
-### `run(link[, args]) -> pipe`
+### `run(link[, args[, flags]]) -> pipe`
 
 Launch a Pear application in a subprocess peer-to-peer or from disk by link.
 
@@ -23,6 +23,10 @@ A `pear://` link, `file://` link or relative path.
 #### `args <string[]> (optional)`
 
 Additional arguments to append to the runtime invocation after the link.
+
+#### `flags <string[]> (optional)`
+
+Additional flags to append to the runtime invocation before the link.
 
 # License
 

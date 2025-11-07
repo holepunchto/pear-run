@@ -13,7 +13,7 @@ const { isElectronRenderer } = require('which-runtime')
 const unixpathresolve = require('unix-path-resolve')
 const program = global.Bare ?? global.process
 
-module.exports = function run(link, args = []) {
+module.exports = function run(link, args = [], flags = []) {
   const isPear = link.startsWith('pear://')
   const isFile = link.startsWith('file://')
   const isPath = isPear === false && isFile === false
@@ -67,7 +67,7 @@ module.exports = function run(link, args = []) {
   const argv = pear(program.argv.slice(1)).rest
   const parser = command('run', ...rundef)
   const cmd = parser.parse(argv, { sync: true })
-  const inject = ['--no-pre', link]
+  const inject = [...flags, '--no-pre', link]
   if (!cmd.flags.trusted) inject.unshift('--trusted')
   if (RTI.startId) inject.unshift('--parent', RTI.startId)
   if (

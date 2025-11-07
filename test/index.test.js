@@ -728,3 +728,35 @@ test('spawns with --no-pre flag', (t) => {
     t.is(hasPre, true)
   })
 })
+
+test('adds flags before the link and args in the runtime invocation', (t) => {
+  t.plan(2)
+
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = { applink: pathToFileURL(__dirname).href, key: null }
+  }
+  global.Pear = new API()
+  const link = path.join(os.tmpdir(), 'foo', 'bar')
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', link)
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+  const pipe = run(link, ['baz'], ['--preflight'])
+  pipe.once('data', (data) => {
+    const childArgv = JSON.parse(data)
+    const preFlightIndex = childArgv.indexOf('--preflight')
+    const linkIndex = childArgv.findIndex(
+      (a) => a.includes('foo') && a.includes('bar')
+    )
+    const bazIndex = childArgv.indexOf('baz')
+    t.is(preFlightIndex < linkIndex, true)
+    t.is(preFlightIndex < bazIndex, true)
+  })
+})
