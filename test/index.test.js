@@ -395,6 +395,41 @@ test('passes Pear.constructor.RUNTIME_ARGV at the head', (t) => {
   })
 })
 
+test('passes Pear.constructor.RUNTIME_FLAGS after the run command', (t) => {
+  t.plan(1)
+
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    static RUNTIME_FLAGS = ['--preflight']
+    app = { key: null, applink: pathToFileURL(os.tmpdir()).href }
+  }
+  global.Pear = new API()
+  const link = fixtures.argv
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', link)
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+  const args = ['--foo', 'bar']
+  const pipe = run(link, args)
+  pipe.once('data', (data) => {
+    const childArgv = JSON.parse(data)
+    t.alike(childArgv.slice(2), [
+      '--preflight',
+      '--trusted',
+      '--no-pre',
+      pathToFileURL(link).href,
+      '--foo',
+      'bar'
+    ])
+  })
+})
+
 test('pipe emits crash event on non-zero child exit', (t) => {
   t.plan(1)
   class API {
