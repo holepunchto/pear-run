@@ -53,6 +53,6 @@
     "streamx": "^2.22.1",
     "unix-path-resolve": "^1.0.2",
     "url-file-url": "^1.0.5",
-    "which-runtime": "file:../which-runtime/which-runtime-1.3.2.tgz"
+    "which-runtime": "^1.3.2"
   }
 }
