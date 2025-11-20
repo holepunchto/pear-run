@@ -13,7 +13,8 @@ const { isElectronRenderer } = require('which-runtime')
 const unixpathresolve = require('unix-path-resolve')
 const program = global.Bare ?? global.process
 
-module.exports = function run(link, args = []) {
+module.exports = function run(link, args = [], opts = {}) {
+  const closePipeOnEnd = opts.closePipeOnEnd ?? true
   const isPear = link.startsWith('pear://')
   const isFile = link.startsWith('file://')
   const isPath = isPear === false && isFile === false
@@ -102,6 +103,10 @@ module.exports = function run(link, args = []) {
     ref.unref()
   })
   const pipe = sp.stdio[3]
-  pipe.on('end', () => pipe.end())
+  if (closePipeOnEnd) {
+    pipe.on('end', () => {
+      pipe.end()
+    })
+  }
   return pipe
 }
