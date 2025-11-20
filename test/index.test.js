@@ -9,6 +9,7 @@ global.Pear = {}
 const run = require('..')
 os.chdir(__dirname)
 const fixtures = {
+  shortLived: path.join(__dirname, 'fixtures', 'short-lived.js'),
   echo: path.join(__dirname, 'fixtures', 'echo.js'),
   argv: path.join(__dirname, 'fixtures', 'argv.js'),
   nonZeroExit: path.join(__dirname, 'fixtures', 'non-zero-exit.js')
@@ -429,6 +430,34 @@ test('passes Pear.constructor.RUNTIME_FLAGS after the run command', (t) => {
     ])
   })
 })
+
+test.solo(
+  'permits testing short lived app without error when closePipeOnEnd is false',
+  async (t) => {
+    t.plan(1)
+
+    class API {
+      static RUNTIME = global.Bare.argv[0]
+      static RTI = {}
+      static RUNTIME_ARGV = []
+      static RUNTIME_FLAGS = []
+      app = { key: null, applink: pathToFileURL(os.tmpdir()).href }
+    }
+    global.Pear = new API()
+    const link = fixtures.shortLived
+    global.Bare.argv.length = 1
+    global.Bare.argv.push('run', link)
+    t.teardown(() => {
+      delete global.Pear
+      global.Bare.argv.length = 1
+      global.Bare.argv.push(...ARGV)
+    })
+
+    // NB: throws 'socket is not connected' when this is true
+    run(link, [], { closePipeOnEnd: false })
+    t.pass('test runs when it should')
+  }
+)
 
 test('pipe emits crash event on non-zero child exit', (t) => {
   t.plan(1)
