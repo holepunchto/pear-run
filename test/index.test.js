@@ -432,7 +432,7 @@ test('passes Pear.constructor.RUNTIME_FLAGS after the run command', (t) => {
 })
 
 test.solo(
-  'permits testing short lived app without error when closePipeOnEnd is false',
+  'permits testing short lived app without error when endPipeOnEnd is false',
   async (t) => {
     t.plan(1)
 
@@ -453,8 +453,8 @@ test.solo(
       global.Bare.argv.push(...ARGV)
     })
 
-    // NB: throws 'socket is not connected' when this is true
-    run(link, [], { closePipeOnEnd: false })
+    // NB: test throws 'socket is not connected' when this is true
+    run(link, [], { endPipeOnEnd: false })
     t.pass('test runs when it should')
   }
 )

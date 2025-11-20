@@ -14,7 +14,7 @@ const unixpathresolve = require('unix-path-resolve')
 const program = global.Bare ?? global.process
 
 module.exports = function run(link, args = [], opts = {}) {
-  const closePipeOnEnd = opts.closePipeOnEnd ?? true
+  const endPipeOnEnd = opts.endPipeOnEnd ?? true
   const isPear = link.startsWith('pear://')
   const isFile = link.startsWith('file://')
   const isPath = isPear === false && isFile === false
@@ -103,7 +103,7 @@ module.exports = function run(link, args = [], opts = {}) {
     ref.unref()
   })
   const pipe = sp.stdio[3]
-  if (closePipeOnEnd) {
+  if (endPipeOnEnd) {
     pipe.on('end', () => {
       pipe.end()
     })
