@@ -9,6 +9,7 @@ const { command } = require('paparam')
 const { spawn } = require('child_process')
 const { pathToFileURL } = require('url-file-url')
 const path = require('path')
+const { ERR_NOT_FOUND } = require('pear-errors')
 const { isElectronRenderer } = require('which-runtime')
 const unixpathresolve = require('unix-path-resolve')
 const program = global.Bare ?? global.process
@@ -59,8 +60,8 @@ module.exports = function run(link, args = []) {
     unixpathresolve('/', link) // throw if escaping root
     if (isAbsolute) link = pathToFileURL(link).href.replaceAll('%23', '#')
     else
-      throw new Error(
-        'Relative paths not supported in versions > v1.0.8 : Use absolute paths, pear links or file urls'
+      ERR_NOT_FOUND(
+        'not found (path must be absolute)'
       )
   }
 
