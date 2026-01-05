@@ -66,6 +66,31 @@ test('injects --trusted flag into argv', (t) => {
   })
 })
 
+test('when from disk, works with require.resolve', (t) => {
+  t.plan(1)
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = { key: null, applink: pathToFileURL(__dirname).href }
+  }
+  global.Pear = new API()
+  const link = './fixtures/echo.js'
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', require.resolve(link))
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+  const pipe = run(require.resolve(link))
+  pipe.on('data', (data) => {
+    t.is(data.toString(), 'hello')
+  })
+  pipe.write('hello')
+})
+
 test('when from disk, injects --base flag into argv', (t) => {
   t.plan(2)
 
@@ -78,79 +103,19 @@ test('when from disk, injects --base flag into argv', (t) => {
   global.Pear = new API()
   const link = !isWindows ? './fixtures/argv.js' : '.\\fixtures\\argv.js'
   global.Bare.argv.length = 1
-  global.Bare.argv.push('run', link)
+  global.Bare.argv.push('run', path.resolve(link))
   t.teardown(() => {
     delete global.Pear
     global.Bare.argv.length = 1
     global.Bare.argv.push(...ARGV)
     pipe.end()
   })
-  const pipe = run(link)
+  const pipe = run(path.resolve(link))
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
     t.is(childArgv[2], '--base')
     t.is(childArgv[3], __dirname)
   })
-})
-
-test('relative path cannot escape app key', (t) => {
-  t.plan(1)
-
-  class API {
-    static RUNTIME = global.Bare.argv[0]
-    static RTI = {}
-    static RUNTIME_ARGV = []
-    app = { key: Buffer.alloc(32), applink: 'pear://keet', dir: __dirname }
-  }
-  global.Pear = new API()
-  const link = '../foo'
-  global.Bare.argv.length = 1
-  global.Bare.argv.push('run', link)
-  try {
-    run(link)
-  } catch (err) {
-    t.is(err.message, `Path cannot be resolved, too many '..'`)
-  }
-})
-
-test('relative path cannot escape project root', (t) => {
-  t.plan(3)
-
-  class API {
-    static RUNTIME = global.Bare.argv[0]
-    static RTI = {}
-    static RUNTIME_ARGV = []
-    app = { key: null, applink: pathToFileURL(__dirname).href, dir: __dirname }
-  }
-  try {
-    global.Pear = new API()
-    global.Bare.argv.length = 1
-    const link = '../foo'
-    global.Bare.argv.push('run', link)
-    run(link)
-  } catch (err) {
-    t.is(err.message, `Path cannot be resolved, too many '..'`)
-  }
-
-  try {
-    global.Pear = new API()
-    global.Bare.argv.length = 1
-    const link = './../foo'
-    global.Bare.argv.push('run', link)
-    run(link)
-  } catch (err) {
-    t.is(err.message, `Path cannot be resolved, too many '..'`)
-  }
-
-  try {
-    global.Pear = new API()
-    global.Bare.argv.length = 1
-    const link = './bar/../../foo'
-    global.Bare.argv.push('run', link)
-    run(link)
-  } catch (err) {
-    t.is(err.message, `Path cannot be resolved, too many '..'`)
-  }
 })
 
 test('absolute path is converted to file url ', (t) => {
@@ -180,71 +145,6 @@ test('absolute path is converted to file url ', (t) => {
       path,
       pathToFileURL(__dirname).href + '/foo/bar',
       'absolute path is coverted to file url'
-    )
-  })
-})
-
-test('relative path is relative to project root', (t) => {
-  t.plan(1)
-
-  class API {
-    static RUNTIME = global.Bare.argv[0]
-    static RTI = {}
-    static RUNTIME_ARGV = []
-    app = { applink: pathToFileURL(__dirname).href, key: null }
-  }
-  global.Pear = new API()
-  const link = './foo/bar'
-  global.Bare.argv.length = 1
-  global.Bare.argv.push('run', link)
-  t.teardown(() => {
-    delete global.Pear
-    global.Bare.argv.length = 1
-    global.Bare.argv.push(...ARGV)
-    pipe.end()
-  })
-  const pipe = run(link)
-  pipe.once('data', (data) => {
-    const childArgv = JSON.parse(data)
-    const path = childArgv[6]
-    t.is(
-      path,
-      pathToFileURL(__dirname).href + '/foo/bar',
-      'relative path is resolved from project root'
-    )
-  })
-})
-
-test('relative path is relative to link with app-key', (t) => {
-  t.plan(1)
-
-  class API {
-    static RUNTIME = global.Bare.argv[0]
-    static RTI = {}
-    static RUNTIME_ARGV = []
-    app = {
-      key: Buffer.alloc(32),
-      applink: 'pear://keet'
-    }
-  }
-  global.Pear = new API()
-  const link = './foo/bar'
-  global.Bare.argv.length = 1
-  global.Bare.argv.push('run', link)
-  t.teardown(() => {
-    delete global.Pear
-    global.Bare.argv.length = 1
-    global.Bare.argv.push(...ARGV)
-    pipe.end()
-  })
-  const pipe = run(link)
-  pipe.once('data', (data) => {
-    const childArgv = JSON.parse(data)
-    const path = childArgv[4]
-    t.is(
-      path,
-      'pear://keet/foo/bar',
-      'relative path is resolved from link with app-key'
     )
   })
 })
@@ -534,7 +434,6 @@ test('normalizes pear://dev link to relative path', (t) => {
   const link = 'pear://dev/fixtures/echo.js'
   Bare.argv.length = 1
   Bare.argv.push('run', link)
-
   const pipe = run(link)
 
   t.teardown(() => {
