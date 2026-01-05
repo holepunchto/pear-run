@@ -57,7 +57,10 @@ module.exports = function run(link, args = []) {
   if (isPath) {
     unixpathresolve('/', link) // throw if escaping root
     if (isAbsolute) link = pathToFileURL(link).href.replaceAll('%23', '#')
-    else throw new Error('Relative paths not supported as of v1.0.9 onwards. Use absolute paths, pear links or file urls')
+    else
+      throw new Error(
+        'Relative paths not supported as of v1.0.9 onwards. Use absolute paths, pear links or file urls'
+      )
   }
 
   const argv = pear(program.argv.slice(1)).rest
