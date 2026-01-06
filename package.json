@@ -14,7 +14,6 @@
   "files": [
     "index.js",
     "index.mobile.js",
-    "mobile-link-runner.js",
     "lib/"
   ],
   "scripts": {
@@ -34,7 +33,6 @@
   "devDependencies": {
     "bare-os": "^3.6.1",
     "brittle": "^3.18.6",
-    "pear-api": "^1.28.8",
     "pear-pipe": "^1.0.0",
     "prettier": "^3.6.2",
     "prettier-config-holepunch": "^1.0.0",
@@ -48,8 +46,8 @@
     "paparam": "^1.8.5",
     "pear-cmd": "^1.0.0",
     "pear-link": "^4.2.1",
+    "pear-mobile": "file:../pear-mobile/pear-mobile-1.0.0.tgz",
     "pear-ref": "^1.0.0",
-    "react-native-bare-kit": "^0.9.0",
     "streamx": "^2.22.1",
     "unix-path-resolve": "^1.0.2",
     "url-file-url": "^1.0.5",
