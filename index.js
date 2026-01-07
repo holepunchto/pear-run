@@ -59,10 +59,7 @@ module.exports = function run(link, args = []) {
   if (isPath) {
     unixpathresolve('/', link) // throw if escaping root
     if (isAbsolute) link = pathToFileURL(link).href.replaceAll('%23', '#')
-    else
-      ERR_NOT_FOUND(
-        'not found (path must be absolute)'
-      )
+    else ERR_NOT_FOUND('not found (path must be absolute)')
   }
 
   const argv = pear(program.argv.slice(1)).rest
