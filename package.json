@@ -35,6 +35,7 @@
     "bare-subprocess": "^5.1.0",
     "paparam": "^1.8.5",
     "pear-cmd": "^1.0.0",
+    "pear-errors": "^1.0.1",
     "pear-link": "^4.1.0",
     "pear-ref": "^1.0.0",
     "unix-path-resolve": "^1.0.2",

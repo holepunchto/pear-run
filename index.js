@@ -9,6 +9,7 @@ const { command } = require('paparam')
 const { spawn } = require('child_process')
 const { pathToFileURL } = require('url-file-url')
 const path = require('path')
+const { ERR_NOT_FOUND } = require('pear-errors')
 const { isElectronRenderer } = require('which-runtime')
 const unixpathresolve = require('unix-path-resolve')
 const program = global.Bare ?? global.process
@@ -26,7 +27,8 @@ module.exports = function run(link, args = []) {
   try {
     parsed = plink.parse(link)
   } catch (err) {
-    if (err.info?.hostname === 'dev') return run('.' + err.info.pathname)
+    if (err.info?.hostname === 'dev')
+      return run(path.resolve('.' + err.info.pathname))
     throw err
   }
   const { key, fork, length } = parsed.drive
@@ -57,11 +59,7 @@ module.exports = function run(link, args = []) {
   if (isPath) {
     unixpathresolve('/', link) // throw if escaping root
     if (isAbsolute) link = pathToFileURL(link).href.replaceAll('%23', '#')
-    else
-      link = plink.serialize({
-        ...applink,
-        pathname: unixpathresolve(applink.pathname || '/', link)
-      })
+    else ERR_NOT_FOUND('not found (path must be absolute)')
   }
 
   const argv = pear(program.argv.slice(1)).rest
