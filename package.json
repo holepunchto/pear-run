@@ -3,6 +3,7 @@
   "version": "1.0.7",
   "exports": {
     ".": {
+      "pear-mobile": "./index.mobile.js",
       "react-native": "./index.rn.js",
       "default": "./index.js"
     },
@@ -14,6 +15,7 @@
   "files": [
     "index.js",
     "index.rn.js",
+    "index.mobile.js",
     "lib/"
   ],
   "scripts": {
