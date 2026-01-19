@@ -49,7 +49,6 @@
     "pear-api": "file:../pear-api/pear-api-1.29.2.tgz",
     "pear-cmd": "^1.0.0",
     "pear-link": "^4.2.1",
-    "pear-mobile": "file:../pear-mobile/pear-mobile-1.0.0.tgz",
     "pear-ref": "^1.0.0",
     "streamx": "^2.22.1",
     "unix-path-resolve": "^1.0.2",
