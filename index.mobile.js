@@ -2,7 +2,7 @@ const Worker = require('bare-worker')
 const linkmapper = require('pear-links-map') // will be transformed in bundler to require the actual file
 const b4a = require('b4a')
 
-module.exports = (link, args= [], data = {}) => {
+module.exports = (link, args = [], data = {}) => {
   console.log('running worker:', link)
   if (typeof link === 'string' && link.startsWith('pear://')) {
     const key = link
