@@ -3,6 +3,7 @@
 const ref = require('pear-ref')
 const plink = require('pear-link')
 const pear = require('pear-cmd')
+const message = require('pear-message')
 const b4a = require('b4a')
 const rundef = require('pear-cmd/run')
 const { command } = require('paparam')
@@ -90,7 +91,7 @@ module.exports = function run(link, args = []) {
     RUNTIME,
     [...RUNTIME_ARGV, 'run', ...RUNTIME_FLAGS, ...argv, ...args],
     {
-      stdio: ['inherit', 'inherit', 'inherit', 'overlapped'],
+      stdio: ['inherit', 'pipe', 'pipe', 'overlapped'],
       windowsHide: true
     }
   )
@@ -101,5 +102,11 @@ module.exports = function run(link, args = []) {
   })
   const pipe = sp.stdio[3]
   pipe.on('end', () => pipe.end())
+  sp.stdout.on('data', (data) => {
+    message({ link, pid: sp.pid, type: 'log', io: 'stdout', data: data.toString() })
+  })
+  sp.stderr.on('data', (data) => {
+    message({ link, pid: sp.pid, type: 'log', io: 'stderr ', data: data.toString() })
+  })
   return pipe
 }
