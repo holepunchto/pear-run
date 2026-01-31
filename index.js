@@ -109,7 +109,7 @@ module.exports = function run(link, args = []) {
   })
   sp.stderr.on('data', (data) => {
     fs.writeSync(2, data)
-    message({ link, pid: sp.pid, type: 'log', io: 'stderr ', data: data.toString() })
+    message({ link, pid: sp.pid, type: 'log', io: 'stderr', data: data.toString() })
   })
   return pipe
 }
