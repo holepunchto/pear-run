@@ -13,6 +13,7 @@ const path = require('path')
 const { ERR_NOT_FOUND } = require('pear-errors')
 const { isElectronRenderer } = require('which-runtime')
 const unixpathresolve = require('unix-path-resolve')
+const fs = require('fs')
 const program = global.Bare ?? global.process
 
 module.exports = function run(link, args = []) {
@@ -103,9 +104,11 @@ module.exports = function run(link, args = []) {
   const pipe = sp.stdio[3]
   pipe.on('end', () => pipe.end())
   sp.stdout.on('data', (data) => {
+    fs.writeSync(1, data)
     message({ link, pid: sp.pid, type: 'log', io: 'stdout', data: data.toString() })
   })
   sp.stderr.on('data', (data) => {
+    fs.writeSync(2, data)
     message({ link, pid: sp.pid, type: 'log', io: 'stderr ', data: data.toString() })
   })
   return pipe
