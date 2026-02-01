@@ -1,13 +1,15 @@
 module.exports = function run(link = 'main', args = []) {
   const { Worklet } = require('react-native-bare-kit')
-  const map = require('../../.pear/utils/pear-links-map-rn')
+  const map = require('../../.pear/utils/pear-links-map-rn') // is always the same since its the root worklet
   const bundle = map[link]?.bundle
+  const wrapper = map['pear-api']?.bundle
   if (!bundle) throw new Error(`could not find bundle for ${link}`)
-  if (link.startsWith('pear://')) link = map[link]?.hash
-  // TODO: use linkmapper for running pear links like in ./mobile.js
-
+  const filename = link.startsWith('pear://') ? map[link]?.hash :link
+  
+  // TODO: increase performance -> send bundle over RPC -> ideal case: require.resolve bundle inside the wrapper thread
   const worklet = new Worklet()
-  worklet.start(`/${link}.bundle`, bundle, args)
+  args = [...args, `/${filename}.bundle`, bundle]
+  worklet.start(`/${filename}-wrapper.bundle`, wrapper, args)
 
   return worklet.IPC
 }
