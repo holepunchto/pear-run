@@ -108,7 +108,7 @@ module.exports = function run(link, args = []) {
     message({
       link,
       pid: sp.pid,
-      type: 'log',
+      type: 'pear/log',
       io: 'stdout',
       data: data.toString()
     })
@@ -118,7 +118,7 @@ module.exports = function run(link, args = []) {
     message({
       link,
       pid: sp.pid,
-      type: 'log',
+      type: 'pear/log',
       io: 'stderr',
       data: data.toString()
     })
