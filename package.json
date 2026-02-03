@@ -18,6 +18,9 @@
     },
     "path": {
       "bare": "bare-path"
+    },
+    "fs": {
+      "bare": "bare-fs"
     }
   },
   "devDependencies": {
@@ -31,6 +34,7 @@
   },
   "dependencies": {
     "b4a": "^1.6.7",
+    "bare-fs": "^4.5.3",
     "bare-path": "^3.0.0",
     "bare-subprocess": "^5.1.0",
     "paparam": "^1.8.5",
