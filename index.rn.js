@@ -1,6 +1,6 @@
 module.exports = function run(link = 'main', args = []) {
   const { Worklet } = require('react-native-bare-kit')
-  const map = require('../../.pear/utils/pear-links-map-rn') // is always the same since its the root worklet
+  const map = require('../../.pear/maps/pear-links-map-rn') // is always the same since its the root worklet
   const bundle = map[link]?.bundle
   const wrapper = map['pear-api']?.bundle
   if (!bundle) throw new Error(`could not find bundle for ${link}`)
@@ -8,7 +8,7 @@ module.exports = function run(link = 'main', args = []) {
   
   // TODO: increase performance -> send bundle over RPC -> ideal case: require.resolve bundle inside the wrapper thread
   const worklet = new Worklet()
-  args = [...args, `/${filename}.bundle`, bundle]
+  args = [...args, link , `/${filename}.bundle`, bundle]
   worklet.start(`/${filename}-wrapper.bundle`, wrapper, args)
 
   return worklet.IPC
