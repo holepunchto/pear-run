@@ -1,13 +1,12 @@
 'use strict'
 /* globals Bare */
-global.Pear = {}
 const test = require('brittle')
 const path = require('bare-path')
 const os = require('bare-os')
 const { pathToFileURL } = require('url-file-url')
 const { isWindows } = require('which-runtime')
 global.Pear = {}
-const run = require('../lib/desktop')
+const run = require('..')
 os.chdir(__dirname)
 const fixtures = {
   echo: path.join(__dirname, 'fixtures', 'echo.js'),
