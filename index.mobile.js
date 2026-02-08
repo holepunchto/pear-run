@@ -12,9 +12,9 @@ module.exports = (link, args = [], data = {}) => {
   }
   // need to pass args to preload as well as link and worker pkg to set up Pear global
   const pkgContent = linkmapper[key]?.pkgContent
-  const info = {pkgContent, link: key}
+  const info = { pkgContent, link: key }
   Worker.preload(require.resolve('pear-api'))
-  const worker = new Worker(link, { workerData: { info ,data, args } })
+  const worker = new Worker(link, { workerData: { info, data, args } })
   worker.write = (message) => worker.postMessage(b4a.from(message))
   worker.on('message', (message) => worker.emit('data', message))
 
