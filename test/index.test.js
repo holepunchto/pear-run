@@ -507,7 +507,7 @@ test('when running from worker config converts to url', (t) => {
       applink: pathToFileURL(__dirname).href,
       options: {
         workers: {
-          "test": "/fixtures/argv.js"
+          test: '/fixtures/argv.js'
         }
       }
     }
@@ -526,6 +526,10 @@ test('when running from worker config converts to url', (t) => {
   pipe.once('data', (data) => {
     const childArgv = JSON.parse(data)
     const actualPath = childArgv[4]
-    t.is(actualPath, pathToFileURL(path.join(__dirname, 'fixtures', 'argv.js')).href, 'worker config run converts to url')
+    t.is(
+      actualPath,
+      pathToFileURL(path.join(__dirname, 'fixtures', 'argv.js')).href,
+      'worker config run converts to url'
+    )
   })
 })

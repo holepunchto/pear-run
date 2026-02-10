@@ -17,22 +17,25 @@ module.exports = function run(link, args = []) {
   const isFile = link.startsWith('file://')
   const isPear = link.startsWith('pear://')
   const isAbsolute = !isFile && path.isAbsolute(link)
-  
+
   const app = Pear.app ?? Pear.config // note: legacy, remove in future
   if (!isFile && !isAbsolute && !isPear) {
     if (app.options.workers === undefined) throw new Error('workers undefined')
     const worker = app.options.workers[link]
-    if (typeof worker !== 'string') throw new Error(`worker "${link}" not found`)
-    const workerLink = app.applink.startsWith('pear://') ?
-      app.applink + worker :
-      pathToFileURL(path.join(fileURLToPath(app.applink), worker.slice(1))).href.replaceAll('%23', '#')
+    if (typeof worker !== 'string')
+      throw new Error(`worker "${link}" not found`)
+    const workerLink = app.applink.startsWith('pear://')
+      ? app.applink + worker
+      : pathToFileURL(
+          path.join(fileURLToPath(app.applink), worker.slice(1))
+        ).href.replaceAll('%23', '#')
     check = 1
     return run(workerLink, args)
   }
   if (isPear && check !== 1) throw ERR_INVALID_INPUT('pear links not supported')
 
   const { RUNTIME, RUNTIME_ARGV, RTI, RUNTIME_FLAGS = [] } = Pear.constructor
-    
+
   if (isElectronRenderer) {
     if (typeof Pear[Pear.constructor.IPC]?.run === 'function') {
       return Pear[Pear.constructor.IPC].run(link, args)
