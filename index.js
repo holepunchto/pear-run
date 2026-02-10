@@ -1,7 +1,9 @@
 'use strict'
 /* globals Pear */
 const ref = require('pear-ref')
+const plink = require('pear-link')
 const pear = require('pear-cmd')
+const b4a = require('b4a')
 const rundef = require('pear-cmd/run')
 const { command } = require('paparam')
 const { spawn } = require('child_process')
@@ -14,8 +16,8 @@ const program = global.Bare ?? global.process
 
 let check
 module.exports = function run(link, args = []) {
-  const isFile = link.startsWith('file://')
   const isPear = link.startsWith('pear://')
+  const isFile = link.startsWith('file://')
   const isAbsolute = !isFile && path.isAbsolute(link)
 
   const app = Pear.app ?? Pear.config // note: legacy, remove in future
@@ -35,6 +37,30 @@ module.exports = function run(link, args = []) {
   if (isPear && check !== 1) throw ERR_INVALID_INPUT('pear links not supported')
 
   const { RUNTIME, RUNTIME_ARGV, RTI, RUNTIME_FLAGS = [] } = Pear.constructor
+  let parsed = null
+  try {
+    parsed = plink.parse(link)
+  } catch (err) {
+    if (err.info?.hostname === 'dev')
+      return run(path.resolve('.' + err.info.pathname))
+    throw err
+  }
+  const { key, fork, length } = parsed.drive
+
+  const applink = plink.parse(app.applink)
+  const { key: appKey } = applink.drive
+  if (
+    appKey &&
+    key &&
+    b4a.equals(key, appKey) &&
+    fork === null &&
+    length === null
+  ) {
+    link = plink.serialize({
+      ...parsed,
+      drive: { ...parsed.drive, length: app.length, fork: app.fork }
+    })
+  }
 
   if (isElectronRenderer) {
     if (typeof Pear[Pear.constructor.IPC]?.run === 'function') {

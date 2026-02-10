@@ -354,6 +354,73 @@ test('pipe emits crash event on non-zero child exit', (t) => {
   pipe.end()
 })
 
+test('locks to parent fork.length version if running link with same key (w/out fork.length) as in parent applink', (t) => {
+  t.plan(2)
+
+  class API {
+    static RUNTIME = Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = {
+      applink: 'pear://keet',
+      fork: 4,
+      length: 9,
+      options: { workers: { test: '/some/path' } }
+    }
+  }
+  global.Pear = new API()
+
+  const link = 'test'
+
+  Bare.argv.length = 1
+  Bare.argv.push('run', link)
+
+  const pipe = run(link)
+
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+
+  pipe.once('data', (data) => {
+    const argv = JSON.parse(data)
+    const out = argv[4]
+    t.ok(out.startsWith('pear://4.9.'), 'fork.length prefix present')
+    t.ok(out.endsWith('/some/path'), 'pathname preserved')
+  })
+})
+
+test('normalizes pear://dev link to relative path', (t) => {
+  t.plan(1)
+
+  class API {
+    static RUNTIME = Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = { key: null, applink: pathToFileURL(__dirname).href }
+  }
+  global.Pear = new API()
+
+  const link = 'pear://dev/fixtures/echo.js'
+  Bare.argv.length = 1
+  Bare.argv.push('run', link)
+  const pipe = run(link)
+
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+    pipe.end()
+  })
+
+  pipe.on('data', (data) => {
+    t.is(data.toString(), 'hello')
+  })
+  pipe.write('hello')
+})
+
 test('splices out --links <value>', (t) => {
   t.plan(2)
 
@@ -386,24 +453,38 @@ test('splices out --links <value>', (t) => {
   })
 })
 
-test('throws on pear link input', (t) => {
+test('injects fork and length when running applink key', (t) => {
   t.plan(1)
   class API {
     static RUNTIME = global.Bare.argv[0]
     static RTI = {}
     static RUNTIME_ARGV = []
-    app = {}
+    app = {
+      applink: 'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co',
+      length: 22,
+      fork: 44,
+      options: { workers: { test: '/worker/index.js' } }
+    }
   }
   global.Pear = new API()
-  const link = 'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co'
+  const link = 'test'
   global.Bare.argv.length = 1
   global.Bare.argv.push('run', link)
   t.teardown(() => {
     delete global.Pear
     global.Bare.argv.length = 1
     global.Bare.argv.push(...ARGV)
+    pipe.end()
   })
-  t.exception(() => run(link), 'pear links not supported')
+  const pipe = run(link)
+  pipe.once('data', (data) => {
+    const childArgv = JSON.parse(data)
+    const link = childArgv[childArgv.length - 1]
+    t.is(
+      link,
+      'pear://44.22.t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co/worker/index.js'
+    )
+  })
 })
 
 test('adds base flag when an absolute path resolves inside Pear.app.dir', (t) => {
@@ -493,6 +574,26 @@ test('spawns with --no-pre flag', (t) => {
     const hasPre = childArgv.includes('--no-pre')
     t.is(hasPre, true)
   })
+})
+
+test('throws on pear link input', (t) => {
+  t.plan(1)
+  class API {
+    static RUNTIME = global.Bare.argv[0]
+    static RTI = {}
+    static RUNTIME_ARGV = []
+    app = {}
+  }
+  global.Pear = new API()
+  const link = 'pear://t8a8tbj6bsej48oxxdgzwmecywm5a6yf31486s8h998ync39r5co'
+  global.Bare.argv.length = 1
+  global.Bare.argv.push('run', link)
+  t.teardown(() => {
+    delete global.Pear
+    global.Bare.argv.length = 1
+    global.Bare.argv.push(...ARGV)
+  })
+  t.exception(() => run(link), 'pear links not supported')
 })
 
 test('when running from worker config converts to url', (t) => {
