@@ -9,7 +9,12 @@ const { command } = require('paparam')
 const { spawn } = require('child_process')
 const { pathToFileURL, fileURLToPath } = require('url-file-url')
 const path = require('path')
-const { ERR_NOT_FOUND, ERR_INVALID_INPUT } = require('pear-errors')
+const {
+  ERR_NOT_FOUND,
+  ERR_INVALID_INPUT,
+  ERR_NOT_FOUND,
+  ERR_INVALID_CONFIG
+} = require('pear-errors')
 const { isElectronRenderer } = require('which-runtime')
 const unixpathresolve = require('unix-path-resolve')
 const program = global.Bare ?? global.process
@@ -23,10 +28,11 @@ module.exports = function run(link, args = []) {
 
   const app = Pear.app ?? Pear.config // note: legacy, remove in future
   if (!isFile && !isAbsolute && !isPear) {
-    if (app.options.workers === undefined) throw new Error('workers undefined')
+    if (app.options.workers === undefined)
+      throw ERR_INVALID_CONFIG('pear.workers undefined')
     const worker = app.options.workers[link]
     if (typeof worker !== 'string')
-      throw new Error(`worker "${link}" not found`)
+      throw ERR_NOT_FOUND(`worker "${link}" not found`)
     const workerLink = app.applink.startsWith('pear://')
       ? app.applink + worker
       : pathToFileURL(
