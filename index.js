@@ -18,6 +18,7 @@ let check
 module.exports = function run(link, args = []) {
   const isPear = link.startsWith('pear://')
   const isFile = link.startsWith('file://')
+  const isPath = isPear === false && isFile === false
   const isAbsolute = !isFile && path.isAbsolute(link)
 
   const app = Pear.app ?? Pear.config // note: legacy, remove in future
@@ -70,10 +71,10 @@ module.exports = function run(link, args = []) {
     }
   }
 
-  if (!isFile) {
+  if (isPath) {
     unixpathresolve('/', link) // throw if escaping root
     if (isAbsolute) link = pathToFileURL(link).href.replaceAll('%23', '#')
-    else if (!isPear) throw ERR_NOT_FOUND('not found (path must be absolute)')
+    else throw ERR_NOT_FOUND('not found (path must be absolute)')
   }
 
   const argv = pear(program.argv.slice(1)).rest
@@ -84,7 +85,7 @@ module.exports = function run(link, args = []) {
   if (RTI.startId) inject.unshift('--parent', RTI.startId)
   if (
     app.key === null &&
-    !isFile &&
+    isPath &&
     (!isAbsolute || link.startsWith(app.applink + '/'))
   ) {
     inject.unshift('--base', app.dir)
