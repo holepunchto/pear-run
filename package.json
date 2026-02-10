@@ -9,6 +9,7 @@
   "scripts": {
     "test:gen": "brittle -r test/all.js test/*.test.js",
     "test": "brittle-bare --coverage test/all.js",
+    "testing": "brittle-bare --coverage test/testing.js",
     "format": "prettier --write .",
     "lint": "prettier --check ."
   },
@@ -30,13 +31,11 @@
     "standard": "^17.1.2"
   },
   "dependencies": {
-    "b4a": "^1.6.7",
     "bare-path": "^3.0.0",
     "bare-subprocess": "^5.1.0",
     "paparam": "^1.8.5",
     "pear-cmd": "^1.0.0",
     "pear-errors": "^1.0.1",
-    "pear-link": "^4.1.0",
     "pear-ref": "^1.0.0",
     "unix-path-resolve": "^1.0.2",
     "url-file-url": "^1.0.5",

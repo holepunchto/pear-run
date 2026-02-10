@@ -7,20 +7,41 @@ const b4a = require('b4a')
 const rundef = require('pear-cmd/run')
 const { command } = require('paparam')
 const { spawn } = require('child_process')
-const { pathToFileURL } = require('url-file-url')
+const { pathToFileURL, fileURLToPath } = require('url-file-url')
 const path = require('path')
-const { ERR_NOT_FOUND } = require('pear-errors')
+const {
+  ERR_NOT_FOUND,
+  ERR_INVALID_INPUT,
+  ERR_NOT_FOUND,
+  ERR_INVALID_CONFIG
+} = require('pear-errors')
 const { isElectronRenderer } = require('which-runtime')
 const unixpathresolve = require('unix-path-resolve')
 const program = global.Bare ?? global.process
 
+let check
 module.exports = function run(link, args = []) {
   const isPear = link.startsWith('pear://')
   const isFile = link.startsWith('file://')
   const isPath = isPear === false && isFile === false
-  const isAbsolute = isPath && path.isAbsolute(link)
+  const isAbsolute = !isFile && path.isAbsolute(link)
 
   const app = Pear.app ?? Pear.config // note: legacy, remove in future
+  if (!isFile && !isAbsolute && !isPear) {
+    if (app.options.workers === undefined)
+      throw ERR_INVALID_CONFIG('pear.workers undefined')
+    const worker = app.options.workers[link]
+    if (typeof worker !== 'string')
+      throw ERR_NOT_FOUND(`worker "${link}" not found`)
+    const workerLink = app.applink.startsWith('pear://')
+      ? app.applink + worker
+      : pathToFileURL(
+          path.join(fileURLToPath(app.applink), worker.slice(1))
+        ).href.replaceAll('%23', '#')
+    check = 1
+    return run(workerLink, args)
+  }
+  if (isPear && check !== 1) throw ERR_INVALID_INPUT('pear links not supported')
 
   const { RUNTIME, RUNTIME_ARGV, RTI, RUNTIME_FLAGS = [] } = Pear.constructor
   let parsed = null
@@ -59,7 +80,7 @@ module.exports = function run(link, args = []) {
   if (isPath) {
     unixpathresolve('/', link) // throw if escaping root
     if (isAbsolute) link = pathToFileURL(link).href.replaceAll('%23', '#')
-    else ERR_NOT_FOUND('not found (path must be absolute)')
+    else throw ERR_NOT_FOUND('not found (path must be absolute)')
   }
 
   const argv = pear(program.argv.slice(1)).rest
